@@ -3,7 +3,7 @@ import socket
 host = ''
 port = 5560
 
-storedValue = "Yo, what's up?"
+storedValue = "Hello"
 
 def setupServer():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -44,7 +44,7 @@ def dataTransfer(conn):
         elif command == 'REPEAT':
             reply = REPEAT(dataMessage)
         elif command == 'EXIT':
-            print("Our client has left us :(")
+            print("Our client has left us")
             break
         elif command == 'KILL':
             print("Our server is shutting down.")
