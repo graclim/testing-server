@@ -1,9 +1,11 @@
 import socket
+import pygame
+from pygame.locals import *
+import time
+import button
 
 host = ''
-port = 5560
-
-storedValue = "Hello"
+port = 5580
 
 def setupServer():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -18,16 +20,8 @@ def setupServer():
 def setupConnection():
     s.listen(1) # Allows one connection at a time.
     conn, address = s.accept()
-    print("Connected to: " + address[0] + ":" + str(address[1]))
+    print("Connected to: " + address[0] + ": " + str(address[1]))
     return conn
-
-def GET():
-    reply = storedValue
-    return reply
-
-def REPEAT(dataMessage):
-    reply = dataMessage[1]
-    return reply
 
 def dataTransfer(conn):
     # A big loop that sends/receives data until told not to.
@@ -35,28 +29,29 @@ def dataTransfer(conn):
         # Receive the data
         data = conn.recv(1024) # receive the data
         data = data.decode('utf-8')
-        # Split the data such that you separate the command
-        # from the rest of the data.
-        dataMessage = data.split(' ', 1)
-        command = dataMessage[0]
-        if command == 'GET':
-            reply = GET()
-        elif command == 'REPEAT':
-            reply = REPEAT(dataMessage)
-        elif command == 'EXIT':
-            print("Our client has left us")
+        if data == 'EXIT':
+            print("client exited")
             break
-        elif command == 'KILL':
-            print("Our server is shutting down.")
+        elif data == 'KILL':
+            print("program killed")
             s.close()
             break
+        elif data == 'w':
+            reply = "forward"
+        elif data == 'a':
+            reply = "left"
+        elif data == 'd':
+            reply = "right"
+        elif data == "u":
+            reply = "up"
+        elif data == "j":
+            reply = "down"
         else:
-            reply = 'Unknown Command'
+            reply = "unknown command"
         # Send the reply back to the client
         conn.sendall(str.encode(reply))
         print("Data has been sent!")
     conn.close()
-        
 
 s = setupServer()
 
